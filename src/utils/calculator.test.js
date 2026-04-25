@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest'
-import { buildStays, computeTotals } from './calculator'
+import {
+  buildStays, computeTotals,
+  computeByYear, computeByMonth, computeForRange,
+  computeSPT, computeAbsences, computeLongestStay,
+} from './calculator'
 
 function d(str) {
   return new Date(str + 'T12:00:00')
@@ -118,5 +122,121 @@ describe('computeTotals', () => {
     expect(totals.beforePR).toBe(0)
     expect(totals.afterPR).toBe(30)
     expect(totals.total).toBe(30)
+  })
+})
+
+describe('computeByYear', () => {
+  it('distributes days across calendar years', () => {
+    // Stay: 2021-08-10 to 2023-01-08 = 517 days
+    const entries = [
+      { date: d('2021-08-10'), type: 'Arrival',   port: 'DAL' },
+      { date: d('2023-01-08'), type: 'Departure', port: 'BOS' },
+    ]
+    const stays = buildStays(entries, new Date())
+    const byYear = computeByYear(stays)
+    const y2021 = byYear.find(y => y.year === 2021)
+    const y2022 = byYear.find(y => y.year === 2022)
+    const y2023 = byYear.find(y => y.year === 2023)
+    // Aug 10 to Dec 31, 2021: 144 days
+    expect(y2021.days).toBe(144)
+    // All of 2022: 365 days
+    expect(y2022.days).toBe(365)
+    // Jan 1 to Jan 8, 2023: 8 days
+    expect(y2023.days).toBe(8)
+    expect(y2021.days + y2022.days + y2023.days).toBe(517)
+  })
+})
+
+describe('computeByMonth', () => {
+  it('distributes days across calendar months', () => {
+    const entries = [
+      { date: d('2025-11-19'), type: 'Arrival',   port: 'DMA' },
+      { date: d('2025-11-23'), type: 'Departure', port: 'NYC' },
+    ]
+    const stays = buildStays(entries, new Date())
+    const byMonth = computeByMonth(stays)
+    const nov = byMonth.find(m => m.year === 2025 && m.month === 11)
+    expect(nov.days).toBe(5)
+  })
+})
+
+describe('computeForRange', () => {
+  it('counts only days overlapping the given range', () => {
+    const entries = [
+      { date: d('2025-01-01'), type: 'Arrival',   port: 'NYC' },
+      { date: d('2025-12-31'), type: 'Departure', port: 'NYC' },
+    ]
+    const stays = buildStays(entries, new Date())
+    // Range: Jan 1 to Jan 31 = 31 days
+    const count = computeForRange(stays, d('2025-01-01'), d('2025-01-31'))
+    expect(count).toBe(31)
+  })
+
+  it('returns 0 when range has no overlap', () => {
+    const entries = [
+      { date: d('2025-01-01'), type: 'Arrival',   port: 'NYC' },
+      { date: d('2025-03-31'), type: 'Departure', port: 'NYC' },
+    ]
+    const stays = buildStays(entries, new Date())
+    const count = computeForRange(stays, d('2025-05-01'), d('2025-05-31'))
+    expect(count).toBe(0)
+  })
+})
+
+describe('computeSPT', () => {
+  it('flags substantial presence when score >= 183', () => {
+    // 200 days in target year → score = 200 → resident
+    const entries = [
+      { date: d('2024-01-01'), type: 'Arrival',   port: 'NYC' },
+      { date: d('2024-07-18'), type: 'Departure', port: 'NYC' }, // 200 days
+    ]
+    const stays = buildStays(entries, new Date())
+    const result = computeSPT(stays, 2024)
+    expect(result.score).toBeGreaterThanOrEqual(183)
+    expect(result.isResident).toBe(true)
+  })
+
+  it('returns non-resident when score < 183', () => {
+    const entries = [
+      { date: d('2024-06-01'), type: 'Arrival',   port: 'NYC' },
+      { date: d('2024-06-30'), type: 'Departure', port: 'NYC' }, // 30 days
+    ]
+    const stays = buildStays(entries, new Date())
+    const result = computeSPT(stays, 2024)
+    expect(result.isResident).toBe(false)
+  })
+})
+
+describe('computeAbsences', () => {
+  it('identifies gaps between stays', () => {
+    const entries = [
+      { date: d('2020-01-01'), type: 'Arrival',   port: 'NYC' },
+      { date: d('2020-03-01'), type: 'Departure', port: 'NYC' },
+      { date: d('2020-06-01'), type: 'Arrival',   port: 'NYC' },
+      { date: d('2020-09-01'), type: 'Departure', port: 'NYC' },
+    ]
+    const stays = buildStays(entries, new Date())
+    const absences = computeAbsences(stays)
+    expect(absences).toHaveLength(1)
+    // Mar 2 to May 31 = 91 days
+    expect(absences[0].days).toBe(91)
+  })
+})
+
+describe('computeLongestStay', () => {
+  it('returns the stay with the most days', () => {
+    const entries = [
+      { date: d('2021-08-10'), type: 'Arrival',   port: 'DAL' },
+      { date: d('2023-01-08'), type: 'Departure', port: 'BOS' },
+      { date: d('2019-08-13'), type: 'Arrival',   port: 'ATL' },
+      { date: d('2019-12-13'), type: 'Departure', port: 'DAL' },
+    ]
+    const stays = buildStays(entries, new Date())
+    const longest = computeLongestStay(stays)
+    expect(longest.days).toBe(517)
+  })
+
+  it('returns null for empty stays array', () => {
+    expect(computeLongestStay([])).toBeNull()
   })
 })
