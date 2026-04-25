@@ -1,0 +1,85 @@
+import { useState } from 'react'
+
+const EXAMPLE = `1    2024-12-11    Arrival    BLA
+2    2024-12-10    Departure    840
+3    2024-12-02    Arrival    MSE
+4    2024-11-28    Departure    Unavailable
+5    2024-11-09    Arrival    BLA`
+
+export default function InputPanel({ onCalculate }) {
+  const [rawText, setRawText] = useState('')
+  const [prDate, setPrDate] = useState('')
+  const [error, setError] = useState('')
+
+  function handleSubmit(e) {
+    e.preventDefault()
+    if (!rawText.trim()) {
+      setError('Please paste your I-94 travel history before calculating.')
+      return
+    }
+    setError('')
+    onCalculate({ rawText, prDate: prDate || null })
+  }
+
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-5">
+      <details className="text-sm text-gray-600" open>
+        <summary className="cursor-pointer font-medium text-gray-700 mb-2">How to use this tool</summary>
+        <ol className="list-decimal list-inside space-y-1 mt-2">
+          <li>
+            Visit{' '}
+            <a href="https://i94.cbp.dhs.gov/search/history-search" target="_blank" rel="noreferrer" className="text-blue-600 underline">
+              i94.cbp.dhs.gov
+            </a>{' '}
+            and log in with your information.
+          </li>
+          <li>Copy the full table under <strong>Travel History Results</strong>.</li>
+          <li>Paste it into the text box below.</li>
+          <li>Optionally enter your Permanent Resident Approval Date.</li>
+          <li>Click <strong>Calculate</strong>. Nothing you enter leaves your device.</li>
+        </ol>
+        <p className="mt-2 text-xs text-gray-500">Example format:</p>
+        <pre className="bg-gray-50 rounded p-2 text-xs mt-1 overflow-auto">{EXAMPLE}</pre>
+      </details>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            I-94 Travel History <span className="text-red-500">*</span>
+          </label>
+          <textarea
+            rows={10}
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Paste your travel history table here…"
+            value={rawText}
+            onChange={e => setRawText(e.target.value)}
+          />
+          {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
+        </div>
+
+        <div className="max-w-xs">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Permanent Resident Approval Date{' '}
+            <span className="text-gray-400 font-normal">(optional)</span>
+          </label>
+          <input
+            type="date"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={prDate}
+            onChange={e => setPrDate(e.target.value)}
+          />
+          <p className="text-xs text-gray-400 mt-1">
+            If provided, totals will be split into pre-PR and post-PR periods.
+          </p>
+        </div>
+
+        <button
+          type="submit"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition-colors"
+        >
+          Calculate
+        </button>
+      </form>
+    </div>
+  )
+}
