@@ -55,4 +55,16 @@ describe('buildCSV', () => {
     expect(csv).toContain('YEARLY SUMMARY')
     expect(csv).toContain('MONTHLY SUMMARY')
   })
+
+  it('quotes port fields containing commas', () => {
+    const stays = [{
+      arrival: d('2025-01-01'),
+      departure: d('2025-01-10'),
+      days: 10,
+      port: 'Newark, NJ',
+      isOngoing: false,
+    }]
+    const csv = buildCSV({ stays, byYear: [], byMonth: [] })
+    expect(csv).toContain('"Newark, NJ"')
+  })
 })

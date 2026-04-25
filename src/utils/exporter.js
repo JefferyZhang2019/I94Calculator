@@ -1,5 +1,13 @@
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
+function csvField(value) {
+  const str = String(value)
+  if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+    return `"${str.replace(/"/g, '""')}"`
+  }
+  return str
+}
+
 /**
  * Builds a CSV string from calculation results.
  * @param {{ stays: Array, byYear: Array, byMonth: Array }} data
@@ -16,7 +24,7 @@ export function buildCSV({ stays, byYear, byMonth }) {
   lines.push('INDIVIDUAL STAYS')
   lines.push('Arrival,Departure,Days,Port,Status')
   for (const s of stays) {
-    lines.push(`${fmt(s.arrival)},${fmt(s.departure)},${s.days},${s.port},${s.isOngoing ? 'Ongoing' : 'Completed'}`)
+    lines.push(`${fmt(s.arrival)},${fmt(s.departure)},${s.days},${csvField(s.port)},${s.isOngoing ? 'Ongoing' : 'Completed'}`)
   }
   lines.push('')
 
