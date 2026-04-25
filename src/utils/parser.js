@@ -18,8 +18,11 @@ export function parseI94Text(rawText) {
   for (const line of lines) {
     const m = line.match(DATE_RE)
     if (!m) continue
-    const parts = line.split(/\s{2,}|\t/)
-    const port = parts[parts.length - 1]?.trim() || ''
+    const parts = line.split(/\s{2,}|\t/).map(p => p.trim()).filter(Boolean)
+    const typeIndex = parts.findIndex(p => /^(arrival|departure)$/i.test(p))
+    const port = typeIndex >= 0 && typeIndex + 1 < parts.length
+      ? parts[typeIndex + 1]
+      : ''
     parsed.push({
       date: new Date(m[1] + 'T12:00:00'),
       type: m[2].charAt(0).toUpperCase() + m[2].slice(1).toLowerCase(),

@@ -14,10 +14,21 @@ describe('parseI94Text', () => {
     expect(result.entries[2].date.toISOString().slice(0, 10)).toBe('2024-12-11')
   })
 
-  it('parses space-separated lines', () => {
+  it('parses space-separated lines and extracts port codes', () => {
     const input = `1    2024-11-09    Arrival    BLA\n2    2024-11-28    Departure    Unavailable`
     const result = parseI94Text(input)
     expect(result.entries).toHaveLength(2)
+    // entries are sorted oldest first
+    expect(result.entries[0].port).toBe('BLA')
+    expect(result.entries[1].port).toBe('Unavailable')
+  })
+
+  it('returns empty port when port column is absent', () => {
+    const input = `1\t2024-12-11\tArrival\n2\t2024-12-10\tDeparture`
+    const result = parseI94Text(input)
+    expect(result.entries).toHaveLength(2)
+    expect(result.entries[0].port).toBe('')
+    expect(result.entries[1].port).toBe('')
   })
 
   it('skips blank lines', () => {
