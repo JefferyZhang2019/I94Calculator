@@ -192,3 +192,53 @@ export function computeLongestStay(stays) {
   if (stays.length === 0) return null
   return stays.reduce((best, s) => (s.days > best.days ? s : best), stays[0])
 }
+
+/**
+ * For each year from first arrival year through currentYear,
+ * counts days in the rolling 5-year window [Jan 1 of (year-4), Dec 31 of year].
+ * @param {Array} stays
+ * @param {number} currentYear
+ * @returns {Array<{year: number, days: number, meetsThreshold: boolean}>}
+ */
+export function computeRolling5Year(stays, currentYear) {
+  if (stays.length === 0) return []
+  const minYear = stays[0].arrival.getFullYear()
+  const results = []
+  for (let y = minYear; y <= currentYear; y++) {
+    const windowStart = new Date(`${y - 4}-01-01T12:00:00`)
+    const windowEnd   = new Date(`${y}-12-31T12:00:00`)
+    const days = computeForRange(stays, windowStart, windowEnd)
+    results.push({ year: y, days, meetsThreshold: days >= 913 })
+  }
+  return results
+}
+
+/**
+ * Computes aggregate visit statistics across all stays.
+ * @param {Array} stays
+ * @returns {{ avgDuration: number, avgGap: number, minDuration: number, maxDuration: number, count: number }}
+ */
+export function computeVisitStats(stays) {
+  const count = stays.length
+  if (count === 0) return { avgDuration: 0, avgGap: 0, minDuration: 0, maxDuration: 0, count: 0 }
+
+  const durations = stays.map(s => s.days)
+  const avgDuration = Math.round(durations.reduce((a, b) => a + b, 0) / count)
+  const minDuration = Math.min(...durations)
+  const maxDuration = Math.max(...durations)
+
+  // Gap = days strictly between consecutive stays (exclusive of both endpoints).
+  // Only count gaps after a completed (non-ongoing) stay.
+  const gaps = []
+  for (let i = 1; i < stays.length; i++) {
+    if (!stays[i - 1].isOngoing) {
+      const gap = differenceInCalendarDays(stays[i].arrival, stays[i - 1].departure) - 1
+      if (gap >= 0) gaps.push(gap)
+    }
+  }
+  const avgGap = gaps.length > 0
+    ? Math.round(gaps.reduce((a, b) => a + b, 0) / gaps.length)
+    : 0
+
+  return { avgDuration, avgGap, minDuration, maxDuration, count }
+}

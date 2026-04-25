@@ -3,6 +3,7 @@ import {
   buildStays, computeTotals,
   computeByYear, computeByMonth, computeForRange,
   computeSPT, computeAbsences, computeLongestStay,
+  computeRolling5Year, computeVisitStats,
 } from './calculator'
 
 function d(str) {
@@ -238,5 +239,105 @@ describe('computeLongestStay', () => {
 
   it('returns null for empty stays array', () => {
     expect(computeLongestStay([])).toBeNull()
+  })
+})
+
+describe('computeRolling5Year', () => {
+  it('returns empty array for empty stays', () => {
+    expect(computeRolling5Year([], 2026)).toEqual([])
+  })
+
+  it('produces one entry per year from first arrival year through currentYear', () => {
+    const entries = [
+      { date: d('2023-06-01'), type: 'Arrival',   port: 'JFK' },
+      { date: d('2023-08-31'), type: 'Departure', port: 'JFK' },
+    ]
+    const stays = buildStays(entries, d('2026-04-26'))
+    const result = computeRolling5Year(stays, 2026)
+    expect(result.map(r => r.year)).toEqual([2023, 2024, 2025, 2026])
+  })
+
+  it('counts days within the rolling [Y-4 … Y] window', () => {
+    // Full 2023: 365 days
+    const entries = [
+      { date: d('2023-01-01'), type: 'Arrival',   port: 'JFK' },
+      { date: d('2023-12-31'), type: 'Departure', port: 'JFK' },
+    ]
+    const stays = buildStays(entries, d('2026-04-26'))
+    const result = computeRolling5Year(stays, 2026)
+    // 2023 window = [2019-01-01 … 2023-12-31] → includes full 2023 stay
+    expect(result.find(r => r.year === 2023).days).toBe(365)
+    // 2024 window = [2020-01-01 … 2024-12-31] → same 365 days still in window
+    expect(result.find(r => r.year === 2024).days).toBe(365)
+  })
+
+  it('sets meetsThreshold true when days >= 913', () => {
+    // 3 full years 2020–2022 ≈ 1095 days
+    const entries = [
+      { date: d('2020-01-01'), type: 'Arrival',   port: 'JFK' },
+      { date: d('2022-12-31'), type: 'Departure', port: 'JFK' },
+    ]
+    const stays = buildStays(entries, d('2026-04-26'))
+    const result = computeRolling5Year(stays, 2026)
+    // 2024 window = [2020-01-01 … 2024-12-31] → 3 years in window
+    expect(result.find(r => r.year === 2024).meetsThreshold).toBe(true)
+  })
+
+  it('sets meetsThreshold false when days < 913', () => {
+    const entries = [
+      { date: d('2025-01-01'), type: 'Arrival',   port: 'JFK' },
+      { date: d('2025-03-01'), type: 'Departure', port: 'JFK' }, // 60 days
+    ]
+    const stays = buildStays(entries, d('2026-04-26'))
+    const result = computeRolling5Year(stays, 2026)
+    expect(result.find(r => r.year === 2026).meetsThreshold).toBe(false)
+  })
+})
+
+describe('computeVisitStats', () => {
+  it('returns zeros for empty stays', () => {
+    expect(computeVisitStats([])).toEqual({
+      avgDuration: 0, avgGap: 0, minDuration: 0, maxDuration: 0, count: 0,
+    })
+  })
+
+  it('computes count, avgDuration, minDuration, maxDuration', () => {
+    const entries = [
+      { date: d('2024-01-01'), type: 'Arrival',   port: 'JFK' },
+      { date: d('2024-01-10'), type: 'Departure', port: 'JFK' }, // 10 days
+      { date: d('2024-03-01'), type: 'Arrival',   port: 'LAX' },
+      { date: d('2024-03-20'), type: 'Departure', port: 'LAX' }, // 20 days
+    ]
+    const stays = buildStays(entries, d('2026-04-26'))
+    const result = computeVisitStats(stays)
+    expect(result.count).toBe(2)
+    expect(result.avgDuration).toBe(15)  // (10 + 20) / 2
+    expect(result.minDuration).toBe(10)
+    expect(result.maxDuration).toBe(20)
+  })
+
+  it('computes avgGap between consecutive completed stays', () => {
+    // differenceInCalendarDays('2024-03-01', '2024-01-10') = 51; gap = 51 - 1 = 50
+    const entries = [
+      { date: d('2024-01-01'), type: 'Arrival',   port: 'JFK' },
+      { date: d('2024-01-10'), type: 'Departure', port: 'JFK' },
+      { date: d('2024-03-01'), type: 'Arrival',   port: 'LAX' },
+      { date: d('2024-03-20'), type: 'Departure', port: 'LAX' },
+    ]
+    const stays = buildStays(entries, d('2026-04-26'))
+    expect(computeVisitStats(stays).avgGap).toBe(50)
+  })
+
+  it('excludes the ongoing stay from gap calculation', () => {
+    const entries = [
+      { date: d('2024-01-01'), type: 'Arrival',   port: 'JFK' },
+      { date: d('2024-01-10'), type: 'Departure', port: 'JFK' }, // 10 days
+      { date: d('2024-03-01'), type: 'Arrival',   port: 'LAX' }, // ongoing
+    ]
+    const stays = buildStays(entries, d('2026-04-26'))
+    const result = computeVisitStats(stays)
+    expect(result.count).toBe(2)
+    // gap = differenceInCalendarDays(2024-03-01, 2024-01-10) - 1 = 50
+    expect(result.avgGap).toBe(50)
   })
 })
