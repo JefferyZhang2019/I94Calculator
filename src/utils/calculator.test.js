@@ -51,6 +51,19 @@ describe('buildStays', () => {
     const stays = buildStays(entries, new Date())
     expect(stays[0].days).toBe(1)
   })
+
+  it('skips a leading Departure with no preceding Arrival', () => {
+    const entries = [
+      { date: d('2025-01-01'), type: 'Departure', port: 'NYC' },
+      { date: d('2025-06-01'), type: 'Arrival',   port: 'NYC' },
+      { date: d('2025-06-30'), type: 'Departure', port: 'NYC' },
+    ]
+    const stays = buildStays(entries, d('2026-04-25'))
+    // First Departure is ignored; only the Arrival→Departure pair is counted
+    expect(stays).toHaveLength(1)
+    expect(stays[0].arrival.toISOString().slice(0, 10)).toBe('2025-06-01')
+    expect(stays[0].days).toBe(30)
+  })
 })
 
 describe('computeTotals', () => {
@@ -90,5 +103,20 @@ describe('computeTotals', () => {
     expect(totals.beforePR).toBe(181)
     expect(totals.afterPR).toBe(184)
     expect(totals.beforePR + totals.afterPR).toBe(totals.total)
+  })
+
+  it('PR date itself is counted as after-PR', () => {
+    // Arrival and PR approval on the same day — that day is after-PR
+    const entries = [
+      { date: d('2025-06-01'), type: 'Arrival',   port: 'NYC' },
+      { date: d('2025-06-30'), type: 'Departure', port: 'NYC' },
+    ]
+    const today = d('2026-04-25')
+    const stays = buildStays(entries, today)
+    const totals = computeTotals(stays, d('2025-06-01'))
+    // All 30 days (Jun 1–30) should be after-PR because prDate = arrival date
+    expect(totals.beforePR).toBe(0)
+    expect(totals.afterPR).toBe(30)
+    expect(totals.total).toBe(30)
   })
 })

@@ -20,6 +20,8 @@ export function buildStays(entries, today) {
     if (entry.type === 'Arrival') {
       currentArrival = entry.date
       currentPort = entry.port
+    // Departure with no preceding Arrival is skipped — the parser
+    // already flags consecutive/leading Departure events as warnings.
     } else if (entry.type === 'Departure' && currentArrival) {
       stays.push({
         arrival: currentArrival,
@@ -65,12 +67,15 @@ export function computeTotals(stays, prDate) {
   const prDateStart = startOfDay(prDate)
 
   for (const stay of stays) {
+    // Re-enumerate each day to classify before/after PR date.
+    // This intentionally re-derives rather than using s.days so that
+    // PR date splits are always based on actual calendar days.
     const days = eachDayOfInterval({ start: stay.arrival, end: stay.departure })
     for (const day of days) {
       if (isBefore(day, prDateStart)) {
         beforePR++
       } else {
-        afterPR++
+        afterPR++ // PR date itself and all later days count as after-PR
       }
     }
   }
