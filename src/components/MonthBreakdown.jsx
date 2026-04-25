@@ -1,12 +1,12 @@
 import { useState } from 'react'
-
-const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+import { useLang } from '../i18n/LangContext'
 
 export default function MonthBreakdown({ byMonth }) {
+  const { t, tpl, monthName } = useLang()
   const [openYears, setOpenYears] = useState({})
-  const [showAll, setShowAll] = useState(false)
+  const [showAll, setShowAll]     = useState(false)
 
-  const years = [...new Set(byMonth.map(m => m.year))].sort((a, b) => b - a)
+  const years        = [...new Set(byMonth.map(m => m.year))].sort((a, b) => b - a)
   const displayYears = showAll ? years : years.slice(0, 3)
 
   function toggle(year) {
@@ -16,14 +16,14 @@ export default function MonthBreakdown({ byMonth }) {
   return (
     <div className="bg-white rounded-xl border border-gray-200">
       <div className="px-6 py-4 border-b border-gray-100">
-        <span className="font-semibold text-gray-900">Month-by-Month Breakdown</span>
+        <span className="font-semibold text-gray-900">{t('monthBreakdownTitle')}</span>
       </div>
 
       <div className="px-6 pb-6 pt-4 space-y-3">
         {displayYears.map(year => {
-          const months = byMonth.filter(m => m.year === year)
+          const months    = byMonth.filter(m => m.year === year)
           const yearTotal = months.reduce((s, m) => s + m.days, 0)
-          const isOpen = openYears[year] ?? year === years[0]
+          const isOpen    = openYears[year] ?? year === years[0]
 
           return (
             <div key={year} className="border border-gray-200 rounded-lg overflow-hidden">
@@ -33,7 +33,7 @@ export default function MonthBreakdown({ byMonth }) {
               >
                 <span className="font-medium text-gray-900">{year}</span>
                 <span className="text-sm text-gray-500">
-                  {yearTotal} days · {months.length} months with presence {isOpen ? '▲' : '▼'}
+                  {tpl('yearSummary', { days: yearTotal, months: months.length })} {isOpen ? '▲' : '▼'}
                 </span>
               </button>
 
@@ -41,8 +41,8 @@ export default function MonthBreakdown({ byMonth }) {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-gray-200 text-xs text-gray-500 uppercase tracking-wide text-left">
-                      <th className="pb-2 pt-3 px-4 pr-4">Month</th>
-                      <th className="pb-2 pt-3 px-4">Days in U.S.</th>
+                      <th className="pb-2 pt-3 px-4 pr-4">{t('colMonth')}</th>
+                      <th className="pb-2 pt-3 px-4">{t('daysInUS')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -50,7 +50,7 @@ export default function MonthBreakdown({ byMonth }) {
                       const record = months.find(r => r.month === m)
                       return (
                         <tr key={m} className="border-b border-gray-100 last:border-0">
-                          <td className="py-2 px-4 text-gray-700">{MONTH_NAMES[m - 1]}</td>
+                          <td className="py-2 px-4 text-gray-700">{monthName(m)}</td>
                           <td className="py-2 px-4">
                             {record
                               ? <span className="font-semibold text-gray-900">{record.days}</span>
@@ -72,7 +72,7 @@ export default function MonthBreakdown({ byMonth }) {
             className="text-sm text-blue-600 hover:underline"
             onClick={() => setShowAll(v => !v)}
           >
-            {showAll ? 'Show fewer years' : `Show all ${years.length} years`}
+            {showAll ? t('showFewerYears') : tpl('showAllYears', { n: years.length })}
           </button>
         )}
       </div>
