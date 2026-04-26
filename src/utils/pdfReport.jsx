@@ -391,6 +391,8 @@ export async function generatePdf({ results, lang }) {
   const a     = document.createElement('a')
   a.href      = url
   a.download  = `i94_report_${today}.pdf`
+  document.body.appendChild(a)
   a.click()
-  URL.revokeObjectURL(url)
+  document.body.removeChild(a)
+  setTimeout(() => URL.revokeObjectURL(url), 10_000)
 }
