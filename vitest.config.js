@@ -8,5 +8,6 @@ export default defineConfig({
     setupFiles: ['./src/test-setup.js'],
     globals: true,
     passWithNoTests: true,
+    include: ['src/**/*.test.{js,jsx,ts,tsx}'],
   },
 })
