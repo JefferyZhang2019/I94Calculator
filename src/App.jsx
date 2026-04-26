@@ -75,7 +75,9 @@ function AppContent() {
           {t('officialResources')}{' '}
           <a className="underline" href="https://i94.cbp.dhs.gov/search/history-search" target="_blank" rel="noreferrer">CBP I-94 History Search</a>
           {' · '}
-          <a className="underline" href="https://www.dhs.gov/i-94-information" target="_blank" rel="noreferrer">DHS I-94 Information</a>
+          <a className="underline" href="https://i94.cbp.dhs.gov/help" target="_blank" rel="noreferrer">{t('linkCBPI94Help')}</a>
+          {' · '}
+          <a className="underline" href="https://www.uscis.gov/citizenship" target="_blank" rel="noreferrer">{t('linkUSCISCitizenship')}</a>
           {' · '}
           <a className="underline" href="https://www.irs.gov/individuals/international-taxpayers/determining-alien-tax-status" target="_blank" rel="noreferrer">IRS: Alien Tax Status</a>
         </p>
