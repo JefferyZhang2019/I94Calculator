@@ -126,6 +126,13 @@ export const strings = {
     pdfChapter6: '5-Year Rolling Window',
     pdfChapter7: 'Visit Statistics',
     pdfFooterDisclaimer: 'For reference only. Consult an immigration attorney for legal advice.',
+    portHeatMapTitle: 'Port Heat Map',
+    portHeatMapAll: 'All',
+    portHeatMapEntry: 'Entry',
+    portHeatMapExit: 'Exit',
+    portHeatMapNotOnMap: 'Not on map',
+    portHeatMapEmpty: 'No port data — paste your I-94 history to see the heat map.',
+    portHeatMapVisits: '{n} visit(s)',
   },
   zh: {
     appTitle: 'I-94 美国居留天数计算器',
