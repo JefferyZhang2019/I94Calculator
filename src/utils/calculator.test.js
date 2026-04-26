@@ -69,6 +69,26 @@ describe('buildStays', () => {
     expect(stays[0].arrival.toISOString().slice(0, 10)).toBe('2025-06-01')
     expect(stays[0].days).toBe(30)
   })
+
+  it('captures exit port from departure entry', () => {
+    const entries = [
+      { date: d('2024-03-01'), type: 'Arrival',   port: 'JFK' },
+      { date: d('2024-03-15'), type: 'Departure', port: 'LAX' },
+    ]
+    const stays = buildStays(entries, new Date())
+    expect(stays[0].port).toBe('JFK')
+    expect(stays[0].exitPort).toBe('LAX')
+  })
+
+  it('sets exitPort to empty string for ongoing stays', () => {
+    const entries = [
+      { date: d('2025-12-05'), type: 'Arrival', port: 'ORD' },
+    ]
+    const stays = buildStays(entries, d('2026-04-26'))
+    expect(stays[0].port).toBe('ORD')
+    expect(stays[0].exitPort).toBe('')
+    expect(stays[0].isOngoing).toBe(true)
+  })
 })
 
 describe('computeTotals', () => {

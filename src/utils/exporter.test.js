@@ -10,11 +10,12 @@ describe('buildCSV', () => {
       departure: d('2025-01-10'),
       days: 10,
       port: 'NYC',
+      exitPort: 'LAX',
       isOngoing: false,
     }]
     const csv = buildCSV({ stays, byYear: [], byMonth: [] })
-    expect(csv).toContain('Arrival,Departure,Days,Port,Status')
-    expect(csv).toContain('2025-01-01,2025-01-10,10,NYC,Completed')
+    expect(csv).toContain('Arrival,Departure,Days,Entry Port,Exit Port,Status')
+    expect(csv).toContain('2025-01-01,2025-01-10,10,NYC,LAX,Completed')
   })
 
   it('marks ongoing stays in the status column', () => {
@@ -23,6 +24,7 @@ describe('buildCSV', () => {
       departure: d('2026-04-25'),
       days: 142,
       port: 'NYC',
+      exitPort: '',
       isOngoing: true,
     }]
     const csv = buildCSV({ stays, byYear: [], byMonth: [] })
@@ -62,6 +64,7 @@ describe('buildCSV', () => {
       departure: d('2025-01-10'),
       days: 10,
       port: 'Newark, NJ',
+      exitPort: 'JFK',
       isOngoing: false,
     }]
     const csv = buildCSV({ stays, byYear: [], byMonth: [] })

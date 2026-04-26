@@ -28,6 +28,7 @@ export function buildStays(entries, today) {
         departure: entry.date,
         days: differenceInCalendarDays(entry.date, currentArrival) + 1,
         port: currentPort,
+        exitPort: entry.port,
         isOngoing: false,
       })
       currentArrival = null
@@ -41,6 +42,7 @@ export function buildStays(entries, today) {
       departure: today,
       days: differenceInCalendarDays(today, currentArrival) + 1,
       port: currentPort,
+      exitPort: '',
       isOngoing: true,
     })
   }

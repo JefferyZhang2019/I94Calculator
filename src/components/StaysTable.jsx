@@ -34,7 +34,8 @@ export default function StaysTable({ stays, warnings }) {
                   <th className="pb-2 pr-4">{t('colArrival')}</th>
                   <th className="pb-2 pr-4">{t('colDeparture')}</th>
                   <th className="pb-2 pr-4">{t('colDays')}</th>
-                  <th className="pb-2 pr-4">{t('colPort')}</th>
+                  <th className="pb-2 pr-4">{t('colEntryPort')}</th>
+                  <th className="pb-2 pr-4">{t('colExitPort')}</th>
                   <th className="pb-2">{t('colStatus')}</th>
                 </tr>
               </thead>
@@ -51,6 +52,7 @@ export default function StaysTable({ stays, warnings }) {
                     </td>
                     <td className="py-2 pr-4 font-semibold text-gray-900">{stay.days}</td>
                     <td className="py-2 pr-4 text-gray-500">{stay.port || '—'}</td>
+                    <td className="py-2 pr-4 text-gray-500">{stay.isOngoing ? '—' : (stay.exitPort || '—')}</td>
                     <td className="py-2">
                       {stay.isOngoing
                         ? <span className="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full">{t('statusOngoing')}</span>

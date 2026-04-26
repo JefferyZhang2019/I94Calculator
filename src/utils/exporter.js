@@ -22,9 +22,9 @@ export function buildCSV({ stays, byYear, byMonth }) {
   lines.push('')
 
   lines.push('INDIVIDUAL STAYS')
-  lines.push('Arrival,Departure,Days,Port,Status')
+  lines.push('Arrival,Departure,Days,Entry Port,Exit Port,Status')
   for (const s of stays) {
-    lines.push(`${fmt(s.arrival)},${fmt(s.departure)},${s.days},${csvField(s.port)},${s.isOngoing ? 'Ongoing' : 'Completed'}`)
+    lines.push(`${fmt(s.arrival)},${fmt(s.departure)},${s.days},${csvField(s.port)},${csvField(s.exitPort)},${s.isOngoing ? 'Ongoing' : 'Completed'}`)
   }
   lines.push('')
 
