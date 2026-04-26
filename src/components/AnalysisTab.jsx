@@ -177,7 +177,7 @@ export default function AnalysisTab({ results }) {
         <CustomRange stays={stays} />
       </Accordion>
 
-      {/* ── Visit Summary (collapsed by default) ── */}
+      {/* ── Visit Summary ── */}
       <Accordion title={t('visitSummaryTitle')} defaultOpen={true}>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <MiniStat label={t('avgVisitDuration')} value={`${visitStats.avgDuration} ${t('daysUnit')}`} />
