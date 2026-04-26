@@ -84,8 +84,8 @@ All three rings use the same color; only opacity varies.
 
 - Scrollable list, all ports sorted by count descending
 - Each row: colored dot (same color scale) + port name + count
-- Matched ports listed first
-- Unmatched ports (no map coordinates) grouped at bottom under a "Not on map" faint divider
+- Matched ports listed first, sorted by count descending within that group
+- Unmatched ports (no map coordinates) grouped at bottom under a "Not on map" faint divider, also sorted by count descending within that group
 - Empty string ports are never listed
 
 #### Integration
