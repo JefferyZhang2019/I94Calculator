@@ -10,12 +10,12 @@ import InputPanel     from './InputPanel'
 import StaysTable     from './StaysTable'
 import YearBreakdown  from './YearBreakdown'
 import MonthBreakdown from './MonthBreakdown'
-import ExportButton   from './ExportButton'
 import OverviewTab    from './OverviewTab'
 import AnalysisTab    from './AnalysisTab'
+import OverviewActions from './OverviewActions'
 
 export default function I94Calculator({ activeTab, setActiveTab, embed = false }) {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const [results, setResults] = useState(null)
   const [rawText, setRawText] = useState('')
   const [prDate, setPrDate]   = useState('')
@@ -88,21 +88,24 @@ export default function I94Calculator({ activeTab, setActiveTab, embed = false }
           {errorBanner}
           <InputPanel rawText={rawText} setRawText={setRawText} prDate={prDate} setPrDate={setPrDate} onCalculate={handleCalculate} />
           {hasData && (
-            <>
-              <div className="flex justify-end">
-                <ExportButton
-                  stays={results.stays}
-                  byYear={results.byYear}
-                  byMonth={results.byMonth}
-                />
-              </div>
-              <StaysTable stays={results.stays} warnings={results.warnings} />
-            </>
+            <StaysTable stays={results.stays} warnings={results.warnings} />
           )}
         </>
       )}
       {activeTab === 'overview' && (hasData
-        ? <OverviewTab results={results} onGoToByYear={() => setActiveTab('byyear')} />
+        ? (
+          <>
+            <OverviewTab results={results} onGoToByYear={() => setActiveTab('byyear')} />
+            <OverviewActions
+              stays={results.stays}
+              byYear={results.byYear}
+              byMonth={results.byMonth}
+              results={results}
+              lang={lang}
+              onGoToStays={() => setActiveTab('stays')}
+            />
+          </>
+        )
         : noDataMsg
       )}
       {activeTab === 'byyear' && (hasData
