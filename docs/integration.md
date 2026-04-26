@@ -26,7 +26,7 @@ Cons: Fixed height requires tuning; no shared state with the host page.
 
 ## Mode 2 — React Component Import
 
-The calculator is exported as a named React component from `src/index.js`.
+The calculator is exported as a named React component from `src/index.js`. Choose one of the two approaches below.
 
 ### Step 1 — Install peer dependencies
 
@@ -38,16 +38,23 @@ npm install react react-dom date-fns recharts
 
 ### Step 2 — Reference the source
 
-Until the package is published to npm, reference the source directory directly:
+**Option A — Copy source into your project:**
 
 ```bash
-# Install from local path
+cp -r /path/to/USDays/src ./src/i94-calculator
+```
+
+**Option B — npm local install** (keeps the source in one place):
+
+```bash
 npm install /path/to/USDays
 ```
 
 ### Step 3 — Import and render
 
-The `I94Calculator` component manages all its own state internally. It requires two props: `activeTab` (string) and `setActiveTab` (function). It also requires a `LangProvider` ancestor for i18n.
+The `I94Calculator` component requires two props: `activeTab` (string) and `setActiveTab` (function). It also requires a `LangProvider` ancestor for i18n.
+
+**If you used Option A (copy):**
 
 ```jsx
 import { useState } from 'react'
@@ -56,13 +63,26 @@ import { I94Calculator } from './i94-calculator/index.js'
 
 export default function MyToolPage() {
   const [activeTab, setActiveTab] = useState('overview')
-
   return (
     <LangProvider>
-      <I94Calculator
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-      />
+      <I94Calculator activeTab={activeTab} setActiveTab={setActiveTab} />
+    </LangProvider>
+  )
+}
+```
+
+**If you used Option B (npm install), the package name is `usdays`:**
+
+```jsx
+import { useState } from 'react'
+import { LangProvider } from 'usdays/src/i18n/LangContext'
+import { I94Calculator } from 'usdays'
+
+export default function MyToolPage() {
+  const [activeTab, setActiveTab] = useState('overview')
+  return (
+    <LangProvider>
+      <I94Calculator activeTab={activeTab} setActiveTab={setActiveTab} />
     </LangProvider>
   )
 }
@@ -70,14 +90,16 @@ export default function MyToolPage() {
 
 ### Step 4 — Include Tailwind CSS
 
-Add the source directory to your Tailwind `content` array:
+**Option A (copy into `src/i94-calculator/`):** No extra config needed — `'./src/**/*.{js,jsx}'` already covers subdirectories of `src/`.
+
+**Option B (npm install):** Add the package source to your `content` array:
 
 ```javascript
 // tailwind.config.js
 export default {
   content: [
     './src/**/*.{js,jsx}',
-    './src/i94-calculator/**/*.{js,jsx}',
+    './node_modules/usdays/src/**/*.{js,jsx}',
   ],
 }
 ```
