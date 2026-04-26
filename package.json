@@ -13,6 +13,7 @@
     "build:lib": "vite build --mode lib"
   },
   "dependencies": {
+    "@react-pdf/renderer": "^4.5.1",
     "date-fns": "^4.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
