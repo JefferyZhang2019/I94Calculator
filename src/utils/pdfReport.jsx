@@ -367,13 +367,11 @@ function ReportDocument({ results, lang }) {
             <Text style={styles.statLabel}>{s.shortestStay}</Text>
             <Text style={styles.statValue}>{visitStats.minDuration} {s.daysUnit}</Text>
           </View>
-          <View style={[styles.statCard, styles.statCardLast]}>
+          <View style={styles.statCard}>
             <Text style={styles.statLabel}>{s.longestStayLabel}</Text>
             <Text style={styles.statValue}>{visitStats.maxDuration} {s.daysUnit}</Text>
           </View>
-        </View>
-        <View style={{ flexDirection: 'row' }}>
-          <View style={[styles.statCard, { flex: 0, width: '22%', marginRight: 0 }]}>
+          <View style={[styles.statCard, styles.statCardLast]}>
             <Text style={styles.statLabel}>{s.totalVisits}</Text>
             <Text style={styles.statValue}>{visitStats.count}</Text>
           </View>
