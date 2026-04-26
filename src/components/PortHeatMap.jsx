@@ -124,7 +124,7 @@ export default function PortHeatMap({ stays }) {
 
           {matched.length === 0 && (
             <p className="absolute inset-0 flex items-center justify-center text-xs text-gray-400">
-              No ports could be mapped
+              {t('portHeatMapNotOnMap')}
             </p>
           )}
         </div>

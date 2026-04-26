@@ -379,9 +379,9 @@ export function lookupPort(portName) {
   // 1. Exact match
   if (PORT_COORDINATES[n]) return PORT_COORDINATES[n]
 
-  // 2. Substring match (either direction)
+  // 2. Substring match — skip short keys to avoid IATA-code false positives
   for (const [key, coords] of Object.entries(PORT_COORDINATES)) {
-    if (n.includes(key) || key.includes(n)) return coords
+    if (key.length > 3 && (n.includes(key) || key.includes(n))) return coords
   }
 
   // 3. First-token match (skip tokens shorter than 4 chars to avoid false positives)

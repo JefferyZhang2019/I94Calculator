@@ -3,9 +3,8 @@ import {
   buildStays, computeTotals,
   computeByYear, computeByMonth, computeForRange,
   computeSPT, computeAbsences, computeLongestStay,
-  computeRolling5Year, computeVisitStats,
+  computeRolling5Year, computeVisitStats, computePortStats,
 } from './calculator'
-import { computePortStats } from './calculator.js'
 
 function d(str) {
   return new Date(str + 'T12:00:00')

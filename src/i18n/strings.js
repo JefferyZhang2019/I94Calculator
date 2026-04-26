@@ -261,5 +261,12 @@ export const strings = {
     pdfChapter6: '5 年滚动窗口',
     pdfChapter7: '访问统计',
     pdfFooterDisclaimer: '仅供参考。如有法律问题，请咨询移民律师。',
+    portHeatMapTitle: '港口热力图',
+    portHeatMapAll: '全部',
+    portHeatMapEntry: '入境',
+    portHeatMapExit: '出境',
+    portHeatMapNotOnMap: '无法定位',
+    portHeatMapEmpty: '暂无港口数据——请粘贴您的I-94记录以查看热力图。',
+    portHeatMapVisits: '{n} 次',
   },
 }
