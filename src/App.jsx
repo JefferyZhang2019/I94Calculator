@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { LangProvider, useLang } from './i18n/LangContext'
 import I94Calculator from './components/I94Calculator'
+import { version } from '../package.json'
 
 function AppContent() {
   const { t, lang, switchLang } = useLang()
@@ -8,7 +9,12 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState('stays')
 
   if (embed) {
-    return <I94Calculator activeTab={activeTab} setActiveTab={setActiveTab} embed />
+    return (
+      <>
+        <I94Calculator activeTab={activeTab} setActiveTab={setActiveTab} embed />
+        <div className="text-center text-gray-400 text-xs py-2">v{version}</div>
+      </>
+    )
   }
 
   const tabs = [
@@ -81,6 +87,7 @@ function AppContent() {
           {' · '}
           <a className="underline" href="https://www.irs.gov/individuals/international-taxpayers/determining-alien-tax-status" target="_blank" rel="noreferrer">IRS: Alien Tax Status</a>
         </p>
+        <p className="mt-3 text-gray-400">v{version}</p>
       </footer>
     </div>
   )

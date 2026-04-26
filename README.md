@@ -11,7 +11,7 @@ All processing is local. No data is sent to any server.
 - Naturalization 5-year rolling window tracking
 - Continuous residence warnings (180-day / 365-day absences)
 - Custom date range calculator
-- CSV export
+- CSV and PDF report export
 - Bilingual UI (English / Chinese)
 - Embeddable via `?embed=true` or importable as a React component
 
@@ -24,6 +24,7 @@ All processing is local. No data is sent to any server.
 | Styling | Tailwind CSS 3 |
 | Date math | date-fns |
 | Charts | Recharts |
+| PDF export | @react-pdf/renderer |
 | Tests | Vitest |
 
 ## Local Development

@@ -6,7 +6,7 @@ The calculator supports two integration modes: iframe embed and React component 
 
 ## Mode 1 — iframe Embed (any tech stack)
 
-Append `?embed=true` to the deployed URL. In embed mode the header, tab bar, and footer are stripped, leaving only the calculator panels stacked vertically.
+Append `?embed=true` to the deployed URL. In embed mode the header, tab bar, and disclaimer footer are stripped, leaving only the calculator panels stacked vertically followed by a minimal version line.
 
 ```html
 <iframe
@@ -33,7 +33,7 @@ The calculator is exported as a named React component from `src/index.js`. Choos
 Your host project needs these if not already present:
 
 ```bash
-npm install react react-dom date-fns recharts
+npm install react react-dom date-fns recharts @react-pdf/renderer
 ```
 
 ### Step 2 — Reference the source
