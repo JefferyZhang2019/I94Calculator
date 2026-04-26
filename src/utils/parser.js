@@ -35,7 +35,14 @@ export function parseI94Text(rawText) {
     return result
   }
 
-  parsed.sort((a, b) => a.date - b.date)
+  parsed.sort((a, b) => {
+    const dateDiff = a.date - b.date
+    if (dateDiff !== 0) return dateDiff
+    // Same date: Departure before Arrival (you leave before returning on a same-day trip)
+    if (a.type === 'Departure' && b.type === 'Arrival') return -1
+    if (a.type === 'Arrival' && b.type === 'Departure') return 1
+    return 0
+  })
 
   for (let i = 1; i < parsed.length; i++) {
     if (parsed[i].type === parsed[i - 1].type) {

@@ -60,4 +60,28 @@ describe('parseI94Text', () => {
     const result = parseI94Text('hello world\nfoo bar')
     expect(result.error).toBeTruthy()
   })
+
+  it('produces no warnings for a same-day round trip (departure and arrival on the same date)', () => {
+    // User departed and re-entered the US on the same day (Nov 17).
+    // The input lists arrival before departure for that date — the parser must sort
+    // departure before arrival within the same date so no false consecutive warnings fire.
+    const input = [
+      '1    2025-01-29    Departure    NEW',
+      '2    2024-11-17    Arrival    RBB',
+      '3    2024-11-17    Departure    427',
+      '4    2024-11-16    Arrival    OTT',
+    ].join('\n')
+    const result = parseI94Text(input)
+    expect(result.warnings).toHaveLength(0)
+  })
+
+  it('sorts same-date records with Departure before Arrival', () => {
+    const input = [
+      '1    2024-11-17    Arrival    RBB',
+      '2    2024-11-17    Departure    427',
+    ].join('\n')
+    const result = parseI94Text(input)
+    expect(result.entries[0].type).toBe('Departure')
+    expect(result.entries[1].type).toBe('Arrival')
+  })
 })
