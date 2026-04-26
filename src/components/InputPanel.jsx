@@ -10,11 +10,9 @@ const EXAMPLE = `1\t2025-03-15\tArrival\tJFK
 7\t2023-12-28\tArrival\tLAX
 8\t2023-08-10\tDeparture\tORD`
 
-export default function InputPanel({ onCalculate }) {
+export default function InputPanel({ rawText, setRawText, prDate, setPrDate, onCalculate }) {
   const { t } = useLang()
-  const [rawText, setRawText] = useState('')
-  const [prDate, setPrDate]   = useState('')
-  const [error, setError]     = useState('')
+  const [error, setError] = useState('')
 
   function handleSubmit(e) {
     e.preventDefault()

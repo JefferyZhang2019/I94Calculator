@@ -17,6 +17,8 @@ import AnalysisTab    from './AnalysisTab'
 export default function I94Calculator({ activeTab, setActiveTab, embed = false }) {
   const { t } = useLang()
   const [results, setResults] = useState(null)
+  const [rawText, setRawText] = useState('')
+  const [prDate, setPrDate]   = useState('')
 
   function handleCalculate({ rawText, prDate }) {
     const today = new Date()
@@ -50,7 +52,7 @@ export default function I94Calculator({ activeTab, setActiveTab, embed = false }
   if (embed) {
     return (
       <div className="space-y-6 p-4">
-        <InputPanel onCalculate={handleCalculate} />
+        <InputPanel rawText={rawText} setRawText={setRawText} prDate={prDate} setPrDate={setPrDate} onCalculate={handleCalculate} />
         {errorBanner}
         {results && !results.error && (
           <>
@@ -84,7 +86,7 @@ export default function I94Calculator({ activeTab, setActiveTab, embed = false }
       {activeTab === 'stays' && (
         <>
           {errorBanner}
-          <InputPanel onCalculate={handleCalculate} />
+          <InputPanel rawText={rawText} setRawText={setRawText} prDate={prDate} setPrDate={setPrDate} onCalculate={handleCalculate} />
           {hasData && (
             <>
               <div className="flex justify-end">
