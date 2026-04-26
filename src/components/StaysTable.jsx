@@ -41,7 +41,7 @@ export default function StaysTable({ stays, warnings }) {
               <tbody>
                 {stays.map((stay, i) => (
                   <tr key={i} className="border-b border-gray-100 last:border-0">
-                    <td className="py-2 pr-4 text-gray-400">{stays.length - i}</td>
+                    <td className="py-2 pr-4 text-gray-400">{i + 1}</td>
                     <td className="py-2 pr-4 font-mono text-gray-900">{fmtDate(stay.arrival)}</td>
                     <td className="py-2 pr-4 font-mono text-gray-900">
                       {stay.isOngoing
