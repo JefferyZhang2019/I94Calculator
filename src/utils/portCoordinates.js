@@ -5,6 +5,7 @@ const PORT_COORDINATES = {
   'new york john f kennedy international airport': { lat: 40.6413, lng: -73.7781 },
   'john f kennedy international airport': { lat: 40.6413, lng: -73.7781 },
   'jfk': { lat: 40.6413, lng: -73.7781 },
+  'nyc': { lat: 40.6413, lng: -73.7781 },
   'new york kennedy': { lat: 40.6413, lng: -73.7781 },
   'los angeles international airport': { lat: 33.9425, lng: -118.4081 },
   'lax': { lat: 33.9425, lng: -118.4081 },
@@ -20,6 +21,7 @@ const PORT_COORDINATES = {
   'den': { lat: 39.8561, lng: -104.6737 },
   'san francisco international airport': { lat: 37.6213, lng: -122.3790 },
   'sfo': { lat: 37.6213, lng: -122.3790 },
+  'sfr': { lat: 37.6213, lng: -122.3790 },
   'seattle tacoma international airport': { lat: 47.4502, lng: -122.3088 },
   'seatac international airport': { lat: 47.4502, lng: -122.3088 },
   'sea': { lat: 47.4502, lng: -122.3088 },
@@ -176,6 +178,8 @@ const PORT_COORDINATES = {
   'boi': { lat: 43.5644, lng: -116.2228 },
   'reno tahoe international airport': { lat: 39.4991, lng: -119.7681 },
   'rno': { lat: 39.4991, lng: -119.7681 },
+  'southern california logistics airport': { lat: 34.5975, lng: -117.3831 },
+  'vcv': { lat: 34.5975, lng: -117.3831 },
 
   // ── Mexico Land Border Crossings ──────────────────────────────────────────
   'san ysidro': { lat: 32.5543, lng: -117.0300 },
