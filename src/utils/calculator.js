@@ -9,7 +9,7 @@ import {
  * Converts sorted Entry[] into Stay[].
  * @param {Array<{date: Date, type: string, port: string}>} entries - sorted oldest first
  * @param {Date} today
- * @returns {Array<{arrival: Date, departure: Date, days: number, port: string, isOngoing: boolean}>}
+ * @returns {Array<{arrival: Date, departure: Date, days: number, port: string, exitPort: string, isOngoing: boolean}>}
  */
 export function buildStays(entries, today) {
   const stays = []
