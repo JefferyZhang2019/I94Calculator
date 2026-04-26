@@ -4,6 +4,7 @@ import {
   isBefore,
   startOfDay,
 } from 'date-fns'
+import { lookupPort } from './portCoordinates.js'
 
 /**
  * Converts sorted Entry[] into Stay[].
@@ -243,4 +244,39 @@ export function computeVisitStats(stays) {
     : 0
 
   return { avgDuration, avgGap, minDuration, maxDuration, count }
+}
+
+/**
+ * Aggregates port usage counts from stays and resolves coordinates.
+ * @param {Array} stays
+ * @param {'all'|'entry'|'exit'} mode
+ * @returns {Array<{port: string, count: number, lat: number|null, lng: number|null, matched: boolean}>}
+ */
+export function computePortStats(stays, mode) {
+  const counts = new Map()
+  for (const stay of stays) {
+    const ports = []
+    if (mode === 'entry' || mode === 'all') {
+      if (stay.port) ports.push(stay.port)
+    }
+    if (mode === 'exit' || mode === 'all') {
+      if (stay.exitPort) ports.push(stay.exitPort)
+    }
+    for (const port of ports) {
+      counts.set(port, (counts.get(port) || 0) + 1)
+    }
+  }
+
+  return Array.from(counts.entries())
+    .map(([port, count]) => {
+      const coords = lookupPort(port)
+      return {
+        port,
+        count,
+        lat: coords ? coords.lat : null,
+        lng: coords ? coords.lng : null,
+        matched: coords !== null,
+      }
+    })
+    .sort((a, b) => b.count - a.count)
 }
