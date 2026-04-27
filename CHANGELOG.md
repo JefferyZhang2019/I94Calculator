@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0] - 2026-04-27
+
+### Added
+
+- **Port Heat Map** — new accordion in the Analysis tab plots all I-94 ports of entry and exit on a US map using heat-glow circles. Frequency-based color coding (green → yellow → orange → red) shows which ports you use most. Toggle between All / Entry / Exit modes. Ports that cannot be mapped appear in a ranked "Not on map" list below the map.
+- **Port coordinates data file** (`src/data/us_poe_enriched.json`) — 416 FAM POE entries with latitude/longitude sourced from US Census Gazetteer and OpenStreetMap. All coordinate maintenance is now centralized in this file.
+
+### Fixed
+
+- **CI: Node.js 24 compatibility** — added `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true` to the deploy workflow to silence Node.js 20 deprecation errors on GitHub Actions runners.
+- **CI: react-simple-maps peer dependency** — added `.npmrc` with `legacy-peer-deps=true` to resolve the React 19 / react-simple-maps@3 peer dependency conflict during `npm ci`.
+
 ## [1.0.1] - 2026-04-26
 
 ### Fixed
