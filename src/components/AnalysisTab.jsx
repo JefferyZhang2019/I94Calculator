@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useLang } from '../i18n/LangContext'
 import { computeSPT, computeAbsences, computeLongestStay } from '../utils/calculator'
 import CustomRange from './CustomRange'
+import PortHeatMap from './PortHeatMap'
 
 function Accordion({ title, defaultOpen = true, children }) {
   const [open, setOpen] = useState(defaultOpen)
@@ -186,6 +187,11 @@ export default function AnalysisTab({ results }) {
           <MiniStat label={t('longestStayLabel')} value={`${visitStats.maxDuration} ${t('daysUnit')}`} />
           <MiniStat label={t('totalVisits')}      value={String(visitStats.count)} />
         </div>
+      </Accordion>
+
+      {/* ── Port Heat Map ── */}
+      <Accordion title={t('portHeatMapTitle')} defaultOpen={false}>
+        <PortHeatMap stays={stays} />
       </Accordion>
 
     </div>

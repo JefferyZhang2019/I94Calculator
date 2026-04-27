@@ -3,7 +3,7 @@ import {
   buildStays, computeTotals,
   computeByYear, computeByMonth, computeForRange,
   computeSPT, computeAbsences, computeLongestStay,
-  computeRolling5Year, computeVisitStats,
+  computeRolling5Year, computeVisitStats, computePortStats,
 } from './calculator'
 
 function d(str) {
@@ -359,5 +359,80 @@ describe('computeVisitStats', () => {
     expect(result.count).toBe(2)
     // gap = differenceInCalendarDays(2024-03-01, 2024-01-10) - 1 = 50
     expect(result.avgGap).toBe(50)
+  })
+})
+
+describe('computePortStats', () => {
+  const stays = [
+    {
+      port: 'New York - John F. Kennedy International Airport',
+      exitPort: 'Los Angeles International Airport',
+      isOngoing: false,
+    },
+    {
+      port: 'New York - John F. Kennedy International Airport',
+      exitPort: '',
+      isOngoing: true,
+    },
+    {
+      port: 'Los Angeles International Airport',
+      exitPort: 'New York - John F. Kennedy International Airport',
+      isOngoing: false,
+    },
+  ]
+
+  it('counts entry ports in entry mode', () => {
+    const result = computePortStats(stays, 'entry')
+    expect(result[0].port).toBe('New York - John F. Kennedy International Airport')
+    expect(result[0].count).toBe(2)
+    expect(result[1].port).toBe('Los Angeles International Airport')
+    expect(result[1].count).toBe(1)
+  })
+
+  it('skips empty exitPort strings in exit mode', () => {
+    const result = computePortStats(stays, 'exit')
+    expect(result.every(r => r.port !== '')).toBe(true)
+  })
+
+  it('counts exit ports correctly in exit mode', () => {
+    const result = computePortStats(stays, 'exit')
+    const lax = result.find(r => r.port === 'Los Angeles International Airport')
+    expect(lax.count).toBe(1)
+    const jfk = result.find(r => r.port === 'New York - John F. Kennedy International Airport')
+    expect(jfk.count).toBe(1)
+  })
+
+  it('counts all ports in all mode', () => {
+    const result = computePortStats(stays, 'all')
+    const jfk = result.find(r => r.port === 'New York - John F. Kennedy International Airport')
+    expect(jfk.count).toBe(3)
+    const lax = result.find(r => r.port === 'Los Angeles International Airport')
+    expect(lax.count).toBe(2)
+  })
+
+  it('returns matched:true and non-null coords for known ports', () => {
+    const result = computePortStats(stays, 'entry')
+    expect(result[0].matched).toBe(true)
+    expect(result[0].lat).not.toBeNull()
+    expect(result[0].lng).not.toBeNull()
+  })
+
+  it('returns matched:false and null coords for unknown ports', () => {
+    const unknownStays = [{ port: 'Zzz Unknown Port XYZ', exitPort: '', isOngoing: false }]
+    const result = computePortStats(unknownStays, 'entry')
+    expect(result[0].matched).toBe(false)
+    expect(result[0].lat).toBeNull()
+    expect(result[0].lng).toBeNull()
+  })
+
+  it('returns empty array for empty stays', () => {
+    expect(computePortStats([], 'all')).toEqual([])
+  })
+
+  it('sorts results by count descending', () => {
+    const result = computePortStats(stays, 'all')
+    for (let i = 1; i < result.length; i++) {
+      expect(result[i].count).toBeLessThanOrEqual(result[i - 1].count)
+    }
   })
 })
