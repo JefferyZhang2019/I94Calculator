@@ -24,8 +24,9 @@ All processing is local. No data is sent to any server.
 | Styling | Tailwind CSS 3 |
 | Date math | date-fns |
 | Charts | Recharts |
+| Map | react-simple-maps |
 | PDF export | @react-pdf/renderer |
-| Tests | Vitest |
+| Tests | Vitest + Testing Library |
 
 ## Local Development
 
