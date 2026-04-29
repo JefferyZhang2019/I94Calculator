@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.1] - 2026-04-29
+
+### Fixed
+
+- **Port Heat Map white screen crash** — `geoAlbersUsa` returns `null` for coordinates outside its clip region (Guam, Puerto Rico, Aruba, and 7 other US territories in `us_poe_enriched.json`). `react-simple-maps` v3's `Marker` then called `_slicedToArray(null)` which threw `TypeError: Invalid attempt to destructure non-iterable instance`, blanking the entire page. Fixed by introducing `SafeMarker`, which checks the projection result before rendering and silently skips out-of-bounds ports.
+
 ## [1.1.0] - 2026-04-27
 
 ### Added
