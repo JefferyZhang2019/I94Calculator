@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ComposableMap, Geographies, Geography, Marker } from 'react-simple-maps'
+import { ComposableMap, Geographies, Geography, Marker, useMapContext } from 'react-simple-maps'
 import { computePortStats } from '../utils/calculator'
 import { useLang } from '../i18n/LangContext'
 
@@ -14,6 +14,14 @@ function portColor(t) {
 
 function baseRadius(t) {
   return 5 + t * 13
+}
+
+// geoAlbersUsa returns null for coordinates outside the US projection area (e.g. Guam, Puerto Rico).
+// Rendering a Marker with null projection crashes the app, so we skip those coordinates.
+function SafeMarker({ coordinates, children, ...props }) {
+  const { projection } = useMapContext()
+  if (!projection(coordinates)) return null
+  return <Marker coordinates={coordinates} {...props}>{children}</Marker>
 }
 
 export default function PortHeatMap({ stays }) {
@@ -98,7 +106,7 @@ export default function PortHeatMap({ stays }) {
               const color = portColor(ratio)
               const base = baseRadius(ratio)
               return (
-                <Marker key={port} coordinates={[lng, lat]}>
+                <SafeMarker key={port} coordinates={[lng, lat]}>
                   <g
                     onMouseEnter={() => setTooltip({ port, count })}
                     onMouseLeave={() => setTooltip(null)}
@@ -108,7 +116,7 @@ export default function PortHeatMap({ stays }) {
                     <circle r={base * 2} fill={color} fillOpacity={0.25} />
                     <circle r={base} fill={color} fillOpacity={0.70} />
                   </g>
-                </Marker>
+                </SafeMarker>
               )
             })}
           </ComposableMap>
